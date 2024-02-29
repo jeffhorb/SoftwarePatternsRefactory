@@ -79,6 +79,11 @@ public class AddRecordDialog extends JDialog implements ActionListener {
 
 		empDetails.add(new JLabel("Full Time:"), "growx, pushx");
 		empDetails.add(fullTimeCombo = new JComboBox<String>(this.parent.fullTime), "growx, pushx, wrap");
+		
+		//Setting fonts and document limits
+        setFontsAndDocumentLimits(empDetails);
+        //Setting initial ID
+        idField.setText(Integer.toString(this.parent.getNextFreeId()));
 
 		buttonPanel.add(save = new JButton("Save"));
 		save.addActionListener(this);
@@ -87,23 +92,25 @@ public class AddRecordDialog extends JDialog implements ActionListener {
 		cancel.addActionListener(this);
 
 		empDetails.add(buttonPanel, "span 2,growx, pushx,wrap");
-		// loop through all panel components and add fonts and listeners
-		for (int i = 0; i < empDetails.getComponentCount(); i++) {
-			empDetails.getComponent(i).setFont(this.parent.font1);
-			if (empDetails.getComponent(i) instanceof JComboBox) {
-				empDetails.getComponent(i).setBackground(Color.WHITE);
-			}// end if
-			else if(empDetails.getComponent(i) instanceof JTextField){
-				field = (JTextField) empDetails.getComponent(i);
-				if(field == ppsField)
-					field.setDocument(new JTextFieldLimit(9));
-				else
-				field.setDocument(new JTextFieldLimit(20));
-			}// end else if
-		}// end for
-		idField.setText(Integer.toString(this.parent.getNextFreeId()));
 		return empDetails;
 	}
+		
+	// Method to set fonts and document limits 
+    private void setFontsAndDocumentLimits(JPanel empDetails) {
+        JTextField field;
+        for (int i = 0; i < empDetails.getComponentCount(); i++) {
+            empDetails.getComponent(i).setFont(this.parent.font1);
+            if (empDetails.getComponent(i) instanceof JComboBox) {
+                empDetails.getComponent(i).setBackground(Color.WHITE);
+            } else if (empDetails.getComponent(i) instanceof JTextField) {
+                field = (JTextField) empDetails.getComponent(i);
+                if (field == ppsField)
+                    field.setDocument(new JTextFieldLimit(9));
+                else
+                    field.setDocument(new JTextFieldLimit(20));
+            }
+        }
+    }
 
 	// add record to file
 	public void addRecord() {
