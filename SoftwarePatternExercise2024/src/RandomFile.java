@@ -18,27 +18,16 @@ public class RandomFile {
 	// Create new file
 	public void createFile(String fileName) {
 		RandomAccessFile file = null;
-
 		try // open file for reading and writing
 		{
 			file = new RandomAccessFile(fileName, "rw");
-
 		} // end try
 		catch (IOException ioException) {
-			JOptionPane.showMessageDialog(null, "Error processing file!");
-			System.exit(1);
+			handleFileError("Error processing file!");
 		} // end catch
-
 		finally {
-			try {
-				if (file != null)
-					file.close(); // close file
+			closeFile(file);
 			} // end try
-			catch (IOException ioException) {
-				JOptionPane.showMessageDialog(null, "Error closing file!");
-				System.exit(1);
-			} // end catch
-		} // end finally
 	} // end createFile
 
 	// Open file for adding or changing records
@@ -54,16 +43,9 @@ public class RandomFile {
 
 	// Close file for adding or changing records
 	public void closeWriteFile() {
-		try // close file and exit
-		{
-			if (output != null)
-				output.close();
-		} // end try
-		catch (IOException ioException) {
-			JOptionPane.showMessageDialog(null, "Error closing file!");
-			System.exit(1);
-		} // end catch
-	} // end closeFile
+		// close file and exit
+		closeFile(output);
+		} // end closeFile
 
 	// Add records to file
 	public long addRecords(Employee employeeToAdd) {
@@ -75,24 +57,17 @@ public class RandomFile {
 
 		try // output values to file
 		{
-			record = new RandomAccessEmployeeRecord(newEmployee.getEmployeeId(), newEmployee.getPps(),
-					newEmployee.getSurname(), newEmployee.getFirstName(), newEmployee.getGender(),
-					newEmployee.getDepartment(), newEmployee.getSalary(), newEmployee.getFullTime());
-
+			record = new RandomAccessEmployeeRecord(newEmployee);
 			output.seek(output.length());// Look for proper position
 			record.write(output);// Write object to file
 			currentRecordStart = output.length();
 		} // end try
 		catch (IOException ioException) {
-			JOptionPane.showMessageDialog(null, "Error writing to file!");
+			 handleFileError("Error writing to file!");
 		} // end catch
 
-		return currentRecordStart - RandomAccessEmployeeRecord.SIZE;// Return
-																	// position
-																	// where
-																	// object
-																	// starts in
-																	// the file
+		// Return position where object starts in the file
+		return currentRecordStart - RandomAccessEmployeeRecord.SIZE;
 	}// end addRecords
 
 	// Change details for existing object
@@ -103,25 +78,21 @@ public class RandomFile {
 		Employee oldDetails = newDetails;
 		try // output values to file
 		{
-			record = new RandomAccessEmployeeRecord(oldDetails.getEmployeeId(), oldDetails.getPps(),
-					oldDetails.getSurname(), oldDetails.getFirstName(), oldDetails.getGender(),
-					oldDetails.getDepartment(), oldDetails.getSalary(), oldDetails.getFullTime());
-
+            record = new RandomAccessEmployeeRecord(oldDetails);
 			output.seek(currentRecordStart);// Look for proper position
 			record.write(output);// Write object to file
 		} // end try
 		catch (IOException ioException) {
-			JOptionPane.showMessageDialog(null, "Error writing to file!");
+			handleFileError("Error writing to file!");
 		} // end catch
 	}// end changeRecors
 
 	// Delete existing object
 	public void deleteRecords(long byteToStart) {
 		long currentRecordStart = byteToStart;
-
+		
 		// object to be written to file
 		RandomAccessEmployeeRecord record;
-		;
 
 		try // output values to file
 		{
@@ -130,7 +101,7 @@ public class RandomFile {
 			record.write(output);// Replace existing object with empty object
 		} // end try
 		catch (IOException ioException) {
-			JOptionPane.showMessageDialog(null, "Error writing to file!");
+			handleFileError("Error writing to file!");
 		} // end catch
 	}// end deleteRecords
 
@@ -141,21 +112,13 @@ public class RandomFile {
 			input = new RandomAccessFile(fileName, "r");
 		} // end try
 		catch (IOException ioException) {
-			JOptionPane.showMessageDialog(null, "File is not suported!");
+			handleFileError("Error writing to file!");
 		} // end catch
 	} // end method openFile
 
 	// Close file
 	public void closeReadFile() {
-		try // close file and exit
-		{
-			if (input != null)
-				input.close();
-		} // end try
-		catch (IOException ioException) {
-			JOptionPane.showMessageDialog(null, "Error closing file!");
-			System.exit(1);
-		} // end catch
+		closeFile(input);
 	} // end method closeFile
 
 	// Get position of first record in file
@@ -290,4 +253,26 @@ public class RandomFile {
 
 		return someoneToDisplay;
 	}// end isSomeoneToDisplay
+	
+	/**
+     * Handles file-related errors by displaying an error message.
+     *
+     * @param errorMessage The error message to be displayed.
+     */
+    private void handleFileError(String errorMessage) {
+        JOptionPane.showMessageDialog(null, errorMessage);
+        System.exit(1);
+    }
+    
+    /*  * Closes the given RandomAccessFile.
+     * @param file The RandomAccessFile to be closed.
+     */
+    private void closeFile(RandomAccessFile file) {
+        try {
+            if (file != null)
+                file.close();
+        } catch (IOException ioException) {
+            handleFileError("Error closing file!");
+        }
+    }
 }// end class RandomFile

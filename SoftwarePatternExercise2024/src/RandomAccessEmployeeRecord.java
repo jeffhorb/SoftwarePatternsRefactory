@@ -4,8 +4,8 @@
  * 
  * */
 
-import java.io.RandomAccessFile;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 
 public class RandomAccessEmployeeRecord extends Employee
 {  
@@ -78,4 +78,11 @@ public class RandomAccessEmployeeRecord extends Employee
       buffer.setLength( 20 );
       file.writeChars( buffer.toString() );
    } // end writeName
+   
+// Constructor that accepts an Employee object
+   public RandomAccessEmployeeRecord(Employee employee) {
+       this(employee.getEmployeeId(), employee.getPps(), employee.getSurname(),
+            employee.getFirstName(), employee.getGender(), employee.getDepartment(),
+            employee.getSalary(), employee.getFullTime());
+   }
 } // end class RandomAccessEmployeeRecord
